@@ -2,7 +2,6 @@
 
 import { TableHeader } from "../components/ui/table"
 import { useEffect, useState } from "react"
-import SearchOrder from "../components/SearchOrder.tsx"
 import { useDispatch, useSelector } from "react-redux"
 import type { Order } from "../models/Order.ts"
 import type { Appdispatch } from "../store/store.tsx"

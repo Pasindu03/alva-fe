@@ -1,40 +1,47 @@
-import {useDispatch} from "react-redux";
-import React, {useEffect, useState} from "react";
-import {deleteFromCart, updateCart} from "../reducer/OrderDetailSlice.ts";
-import {CartItem} from "../models/CartItem.ts";
+"use client"
+
+import { useDispatch } from "react-redux"
+import type React from "react"
+import { useEffect, useState } from "react"
+import { deleteFromCart, updateCart } from "../reducer/OrderDetailSlice.ts"
+import type { CartItem } from "../models/CartItem.ts"
+import { Button } from "./ui/button.tsx"
+import { Label } from "./ui/label.tsx"
+import { Input } from "./ui/input.tsx"
+import { X, ShoppingCart, Trash2, Save } from "lucide-react"
 
 interface UpdateCartItemModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    clickedItem:CartItem|null;
+    isOpen: boolean
+    onClose: () => void
+    clickedItem: CartItem | null
 }
-const UpdateCart :(React.FC<UpdateCartItemModalProps>) =({isOpen, onClose, clickedItem})=> {
 
-    const dispatch = useDispatch();
+const UpdateCart: React.FC<UpdateCartItemModalProps> = ({ isOpen, onClose, clickedItem }) => {
+    const dispatch = useDispatch()
 
-    const [itemCode, setItemCode] = useState('');
-    const [desc, setDesc] = useState('');
-    const [unitPrice, setUnitPrice] = useState<number>(0);
-    const [qty, setQty] = useState<number>(0);
-    const [subTotal, setSubTotal] = useState<number>(0);
+    const [itemCode, setItemCode] = useState("")
+    const [desc, setDesc] = useState("")
+    const [unitPrice, setUnitPrice] = useState<number>(0)
+    const [qty, setQty] = useState<number>(0)
+    const [subTotal, setSubTotal] = useState<number>(0)
 
     useEffect(() => {
-        if(clickedItem) {
-            setItemCode(clickedItem.itemCode);
-            setDesc(clickedItem.desc);
-            setUnitPrice(clickedItem.unitPrice);
-            setQty(clickedItem.qty);
-            setSubTotal(clickedItem.subTotal);
-        };
-    },[clickedItem]);
+        if (clickedItem) {
+            setItemCode(clickedItem.itemCode)
+            setDesc(clickedItem.desc)
+            setUnitPrice(clickedItem.unitPrice)
+            setQty(clickedItem.qty)
+            setSubTotal(clickedItem.subTotal)
+        }
+    }, [clickedItem])
+
     const handleQuantityChange = (value: string) => {
-        const qty = Number(value);
-        setQty(qty);
-        setSubTotal(qty * unitPrice);
-    };
+        const qty = Number(value)
+        setQty(qty)
+        setSubTotal(qty * unitPrice)
+    }
 
-    const handleAddToCart = () => {
-
+    const handleUpdateCart = () => {
         const cartItem = {
             itemCode,
             desc,
@@ -43,105 +50,95 @@ const UpdateCart :(React.FC<UpdateCartItemModalProps>) =({isOpen, onClose, click
             subTotal,
         }
 
-        dispatch(updateCart(cartItem));
+        dispatch(updateCart(cartItem))
 
-        setItemCode('');
-        setDesc('');
-        setUnitPrice(0);
-        setQty(0);
-        setSubTotal(0);
-        onClose();
-    };
-    const handleDelete =()=>{
-        dispatch(deleteFromCart(clickedItem));
+        setItemCode("")
+        setDesc("")
+        setUnitPrice(0)
+        setQty(0)
+        setSubTotal(0)
         onClose()
     }
-    if (!isOpen) return null;
+
+    const handleDelete = () => {
+        dispatch(deleteFromCart(clickedItem))
+        onClose()
+    }
+
+    if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-            <div className="bg-white p-5 rounded shadow-lg w-11/12 md:w-1/2">
-                <h1 className="text-2xl font-bold mb-4">Add Item to Order</h1>
-                <form className="space-y-3">
-                    <div>
-                        <label htmlFor="order-item-id" className="form-label">Item Id</label>
-                        <input
-                            type="text"
-                            className="form-control border rounded p-2 w-full"
-                            id="order-item-id"
-                            value={itemCode}
-                            readOnly
-                        />
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-card w-full max-w-xl rounded-lg shadow-lg border border-border p-6 animate-in zoom-in-95">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                        <ShoppingCart className="h-5 w-5 text-primary" />
+                        <h2 className="text-2xl font-semibold text-foreground">Update Cart Item</h2>
                     </div>
-                    <div>
-                        <label htmlFor="order-item-desc" className="form-label">Item Description</label>
-                        <input
-                            type="text"
-                            className="form-control border rounded p-2 w-full"
-                            id="order-item-desc"
+                    <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+                        <X className="h-4 w-4" />
+                    </Button>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="update-item-id">Item ID</Label>
+                        <Input id="update-item-id" value={itemCode} readOnly className="bg-muted" />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="update-item-desc">Item Description</Label>
+                        <Input
+                            id="update-item-desc"
                             value={desc}
-                            onChange={(e) => {
-                                setDesc(e.target.value);
-                            }}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="order-item-price" className="form-label">Unit Price</label>
-                        <input
-                            type="text"
-                            className="form-control border rounded p-2 w-full"
-                            id="order-item-price"
-                            value={unitPrice}
+                            onChange={(e) => setDesc(e.target.value)}
                             readOnly
+                            className="bg-muted"
                         />
                     </div>
-                    <div>
-                        <label htmlFor="order-item-qty" className="form-label">Quantity</label>
-                        <input
-                            type="number"
-                            className="form-control border rounded p-2 w-full"
-                            id="order-item-qty"
-                            placeholder="Enter Quantity"
-                            value={qty}
-                            onChange={(e) => handleQuantityChange(e.target.value)}
-                        />
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="update-item-price">Unit Price</Label>
+                            <Input id="update-item-price" value={unitPrice} readOnly className="bg-muted" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="update-item-qty">Quantity</Label>
+                            <Input
+                                id="update-item-qty"
+                                type="number"
+                                value={qty}
+                                onChange={(e) => handleQuantityChange(e.target.value)}
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <label htmlFor="order-sub-total" className="form-label">Sub Total</label>
-                        <input
-                            type="text"
-                            className="form-control border rounded p-2 w-full"
-                            id="order-sub-total"
-                            value={subTotal}
-                            readOnly
-                        />
+
+                    <div className="space-y-2">
+                        <Label htmlFor="update-sub-total">Sub Total</Label>
+                        <Input id="update-sub-total" value={subTotal} readOnly className="bg-muted font-medium text-lg" />
                     </div>
-                    <div>
-                        <button
-                            type="button"
-                            className="btn btn-outline-success w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
-                            onClick={handleAddToCart}
-                        >
-                            Add to Cart
-                        </button>
+
+                    <div className="grid grid-cols-2 gap-4 pt-4">
+                        <Button type="button" variant="destructive" className="w-full" onClick={handleDelete}>
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Remove Item
+                        </Button>
+
+                        <Button type="button" className="w-full" onClick={handleUpdateCart} disabled={qty <= 0}>
+                            <Save className="mr-2 h-4 w-4" />
+                            Update Item
+                        </Button>
                     </div>
-                </form>
-                <button
-                    type="button"
-                    className="mt-4 w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
-                    onClick={handleDelete}
-                >
-                    Delete
-                </button>
-                <button
-                    type="button"
-                    className="mt-4 w-full border-red-500 border-2 text-red-400 py-2 rounded-md hover:bg-red-500 hover:text-white"
-                    onClick={onClose}
-                >
-                    Close
-                </button>
+
+                    <Button type="button" variant="outline" className="w-full mt-2" onClick={onClose}>
+                        Cancel
+                    </Button>
+                </div>
             </div>
         </div>
-    );
-};
-export default UpdateCart;
+    )
+}
+
+export default UpdateCart
+
